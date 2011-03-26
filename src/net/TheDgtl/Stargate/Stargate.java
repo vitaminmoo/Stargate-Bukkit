@@ -73,6 +73,9 @@ public class Stargate extends JavaPlugin {
 	private static String denyMsg = "Access Denied";
 	private static String invMsg = "Invalid Destination"; 
 	private static String blockMsg = "Destination Blocked";
+	private static String clearMsg = "Stepping through this gate will clear your inventory";
+	private static String clearedMsg = "Your inventory has been cleared";
+	private static String clearDestMsg = "The destination gate will clear your inventory upon return";
 	private static String defNetwork = "central";
 	private static boolean destroyExplosion = false;
 	private static int activeLimit = 10;
@@ -140,6 +143,9 @@ public class Stargate extends JavaPlugin {
 		denyMsg = config.getString("not-owner-message", denyMsg);
 		invMsg = config.getString("not-selected-message", invMsg);
 		blockMsg = config.getString("other-side-blocked-message", blockMsg);
+		clearMsg = config.getString("use-will-clear-message", clearMsg);
+		clearedMsg = config.getString("cleared-message", clearedMsg);
+		clearDestMsg = config.getString("dest-will-clear-message", clearDestMsg);
 		defNetwork = config.getString("default-gate-network", defNetwork).trim();
 		destroyExplosion = config.getBoolean("destroyexplosion", destroyExplosion);
 		// iConomy
@@ -161,6 +167,9 @@ public class Stargate extends JavaPlugin {
 		config.setProperty("not-owner-message", denyMsg);
 		config.setProperty("not-selected-message", invMsg);
 		config.setProperty("other-side-blocked-message", blockMsg);
+		config.setProperty("use-will-clear-message", clearMsg);
+		config.setProperty("cleared-message", clearedMsg);
+		config.setProperty("dest-will-clear-message", clearDestMsg);
 		config.setProperty("default-gate-network", defNetwork);
 		config.setProperty("destroyexplosion", destroyExplosion);
 		// iConomy
@@ -246,6 +255,16 @@ public class Stargate extends JavaPlugin {
 					player.sendMessage(ChatColor.RED + blockMsg);
 				}
 			} else {
+				if (gate.willClearInventory()) {
+					if (!clearMsg.isEmpty()) {
+						player.sendMessage(ChatColor.YELLOW + clearMsg);
+					}
+				}
+				if (destination.willClearInventory()) {
+					if (!clearDestMsg.isEmpty()) {
+						player.sendMessage(ChatColor.YELLOW + clearDestMsg);
+					}
+				}
 				gate.open(player, false);
 			}
 		} else {
@@ -329,6 +348,9 @@ public class Stargate extends JavaPlugin {
 						if (!iConomyHandler.useiConomy() || iConomyHandler.chargePlayer(player.getName(), iConomyHandler.useCost)) {
 							if (iConomyHandler.useiConomy()) {
 								player.sendMessage(ChatColor.GREEN + "Deducted " + iConomy.getBank().format(iConomyHandler.useCost));
+							}
+							if (!clearMsg.isEmpty() && portal.willClearInventory()) {
+								player.sendMessage(ChatColor.YELLOW + clearedMsg);
 							}
 							if (!teleMsg.isEmpty()) {
 								player.sendMessage(ChatColor.BLUE + teleMsg);

@@ -18,6 +18,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.material.Button;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
@@ -54,6 +55,7 @@ public class Portal {
 	private boolean hidden = false;
 	private boolean alwaysOn = false;
 	private boolean priv = false;
+	private boolean clearInventory = false;
 	private World world;
 	// Gate options
 	private boolean verified;
@@ -69,7 +71,7 @@ public class Portal {
 			float rotX, SignPost id, Blox button,
 			String dest, String name,
 			boolean verified, String network, Gate gate,
-			String owner, boolean hidden, boolean alwaysOn, boolean priv) {
+			String owner, boolean hidden, boolean alwaysOn, boolean priv, boolean clearInventory) {
 		this.topLeft = topLeft;
 		this.modX = modX;
 		this.modZ = modZ;
@@ -86,6 +88,7 @@ public class Portal {
 		this.hidden = hidden;
 		this.alwaysOn = alwaysOn;
 		this.priv = priv;
+		this.clearInventory = clearInventory;
 		this.world = topLeft.getWorld();
 		
 		if (this.alwaysOn && !this.fixed) {
@@ -113,6 +116,10 @@ public class Portal {
 	
 	public boolean isPrivate() {
 		return priv;
+	}
+	
+	public boolean willClearInventory() {
+		return clearInventory;
 	}
 
 	public boolean open(boolean force) {
@@ -162,7 +169,6 @@ public class Portal {
 		
 		if (!isAlwaysOn()) {
 			Portal end = getDestination();
-
 			if (end != null && end.isOpen()) {
 				end.deactivate(); // Clear it's destination first.
 				end.close(false);
@@ -199,8 +205,15 @@ public class Portal {
 	public void teleport(Player player, Portal origin, PlayerMoveEvent event) {
 		Location traveller = player.getLocation();
 		Location exit = getExit(traveller, origin);
+		Inventory inventory = player.getInventory();
 
 		exit.setYaw(origin.getRotation() - traveller.getYaw() + this.getRotation() + 180);
+		
+		if (origin.willClearInventory()) {
+			for (int i = 0; i < 39; i++) {
+				inventory.setItem(i, null);
+			}
+		}
 
 		// Change "from" so we don't get hack warnings. Cancel player move event.
 		event.setFrom(exit);
@@ -547,6 +560,7 @@ public class Portal {
 		boolean hidden = (options.indexOf('h') != -1 || options.indexOf('H') != -1);
 		boolean alwaysOn = (options.indexOf('a') != -1 || options.indexOf('A') != -1);
 		boolean priv = (options.indexOf('p') != -1 || options.indexOf('P') != -1);
+		boolean clearInventory = (options.indexOf('c') != -1 || options.indexOf('C') != -1);
 		
 		// Check if the user can only create personal gates, set network if so
 		if (Stargate.hasPerm(player, "stargate.create.personal", false) && 
@@ -633,7 +647,7 @@ public class Portal {
 			button.setType(Material.STONE_BUTTON.getId());
 			button.setData(facing);
 		}
-		portal = new Portal(topleft, modX, modZ, rotX, id, button, destName, name, true, network, gate, player.getName(), hidden, alwaysOn, priv);
+		portal = new Portal(topleft, modX, modZ, rotX, id, button, destName, name, true, network, gate, player.getName(), hidden, alwaysOn, priv, clearInventory);
 
 		// Open always on gate
 		if (portal.isAlwaysOn()) {
@@ -713,6 +727,8 @@ public class Portal {
 				builder.append(':');
 				builder.append(portal.isPrivate());
 				builder.append(':');
+				builder.append(portal.willClearInventory());
+				builder.append(':');
 				builder.append(portal.world.getName());
 				
 				bw.append(builder.toString());
@@ -779,8 +795,9 @@ public class Portal {
 					boolean hidden = (split.length > 11) ? split[11].equalsIgnoreCase("true") : false;
 					boolean alwaysOn = (split.length > 12) ? split[12].equalsIgnoreCase("true") : false;
 					boolean priv = (split.length > 13) ? split[13].equalsIgnoreCase("true") : false;
+					boolean clearInventory = (split.length > 14) ? split[14].equalsIgnoreCase("true") : false;
 
-					Portal portal = new Portal(topLeft, modX, modZ, rotX, sign, button, dest, name, false, network, gate, owner, hidden, alwaysOn, priv);
+					Portal portal = new Portal(topLeft, modX, modZ, rotX, sign, button, dest, name, false, network, gate, owner, hidden, alwaysOn, priv, clearInventory);
 					portal.close(true);
 				}
 				scanner.close();
