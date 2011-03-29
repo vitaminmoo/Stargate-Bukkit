@@ -375,6 +375,10 @@ public class Portal {
 		return openTime;
 	}
 
+	public String getWorld() {
+		return world.getName();
+	}
+
 	public void cycleDestination(Player player) {
 		if (!isActive() || getActivePlayer() != player) {
 			activate(player);

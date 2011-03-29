@@ -34,6 +34,7 @@ import org.bukkit.event.vehicle.VehicleListener;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.event.world.WorldEvent;
 import org.bukkit.event.world.WorldListener;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -263,7 +264,18 @@ public class Stargate extends JavaPlugin {
 					player.sendMessage(ChatColor.RED + blockMsg);
 				}
 			} else {
+				if (clearOnEgressWorlds.indexOf(gate.getWorld()) != -1 || clearOnIngressWorlds.indexOf(destination.getWorld()) != -1) {
+					if(!clearMsg.isEmpty()) {
+						player.sendMessage(ChatColor.YELLOW + clearMsg);
+					}
+				}
+				if (clearOnEgressWorlds.indexOf(destination.getWorld()) != -1) {
+					if(!clearDestMsg.isEmpty()) {
+						player.sendMessage(ChatColor.YELLOW + clearDestMsg);
+					}
+				}
 				gate.open(player, false);
+				
 			}
 		} else {
 			gate.close(false);
@@ -347,10 +359,19 @@ public class Stargate extends JavaPlugin {
 							if (iConomyHandler.useiConomy()) {
 								player.sendMessage(ChatColor.GREEN + "Deducted " + iConomy.getBank().format(iConomyHandler.useCost));
 							}
+							
 							if (!teleMsg.isEmpty()) {
 								player.sendMessage(ChatColor.BLUE + teleMsg);
 							}
-	
+							if (clearOnEgressWorlds.indexOf(portal.getWorld()) != -1 || clearOnIngressWorlds.indexOf(destination.getWorld()) != -1) {
+								for (int i = 0; i < 39; i++) {
+									Inventory inventory = player.getInventory();
+									inventory.setItem(i, null);
+								}
+								if(!clearedMsg.isEmpty()) {
+									player.sendMessage(ChatColor.YELLOW + clearedMsg);
+								}
+							}
 							destination.teleport(player, portal, event);
 						} else {
 							if (!iConomyHandler.inFundMsg.isEmpty()) {
