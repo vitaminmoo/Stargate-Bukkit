@@ -2,6 +2,7 @@ package net.TheDgtl.Stargate;
 
 import java.io.File;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
@@ -73,8 +74,14 @@ public class Stargate extends JavaPlugin {
 	private static String denyMsg = "Access Denied";
 	private static String invMsg = "Invalid Destination"; 
 	private static String blockMsg = "Destination Blocked";
+	private static String clearMsg = "Stepping through this gate will clear your inventory";
+	private static String clearedMsg = "Your inventory has been cleared";
+	private static String clearDestMsg = "The destination gate will clear your inventory upon return";
 	private static String defNetwork = "central";
 	private static boolean destroyExplosion = false;
+	private static List<String> clearOnIngressWorlds;
+	private static List<String> clearOnEgressWorlds;
+
 	private static int activeLimit = 10;
 	private static int openLimit = 10;
 	
@@ -140,8 +147,13 @@ public class Stargate extends JavaPlugin {
 		denyMsg = config.getString("not-owner-message", denyMsg);
 		invMsg = config.getString("not-selected-message", invMsg);
 		blockMsg = config.getString("other-side-blocked-message", blockMsg);
+		clearMsg = config.getString("use-will-clear-message", clearMsg);
+		clearedMsg = config.getString("cleared-message", clearedMsg);
+		clearDestMsg = config.getString("dest-will-clear-message", clearDestMsg);
 		defNetwork = config.getString("default-gate-network", defNetwork).trim();
 		destroyExplosion = config.getBoolean("destroyexplosion", destroyExplosion);
+        clearOnIngressWorlds = config.getStringList("clear-on-ingress-worlds", clearOnIngressWorlds);
+        clearOnEgressWorlds = config.getStringList("clear-on-egress-worlds", clearOnEgressWorlds);
 		// iConomy
 		iConomyHandler.useiConomy = config.getBoolean("useiconomy", iConomyHandler.useiConomy);
 		iConomyHandler.createCost = config.getInt("createcost", iConomyHandler.createCost);
@@ -161,8 +173,13 @@ public class Stargate extends JavaPlugin {
 		config.setProperty("not-owner-message", denyMsg);
 		config.setProperty("not-selected-message", invMsg);
 		config.setProperty("other-side-blocked-message", blockMsg);
+		config.setProperty("use-will-clear-message", clearMsg);
+		config.setProperty("cleared-message", clearedMsg);
+		config.setProperty("dest-will-clear-message", clearDestMsg);
 		config.setProperty("default-gate-network", defNetwork);
 		config.setProperty("destroyexplosion", destroyExplosion);
+		config.setProperty("clear-on-ingress-worlds", clearOnIngressWorlds);
+		config.setProperty("clear-on-egress-worlds", clearOnEgressWorlds);
 		// iConomy
 		config.setProperty("useiconomy", iConomyHandler.useiConomy);
 		config.setProperty("createcost", iConomyHandler.createCost);
