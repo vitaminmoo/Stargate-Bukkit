@@ -264,14 +264,16 @@ public class Stargate extends JavaPlugin {
 					player.sendMessage(ChatColor.RED + blockMsg);
 				}
 			} else {
-				if (clearOnEgressWorlds.indexOf(gate.getWorld()) != -1 || clearOnIngressWorlds.indexOf(destination.getWorld()) != -1) {
-					if(!clearMsg.isEmpty()) {
-						player.sendMessage(ChatColor.YELLOW + clearMsg);
+				if (gate.getWorld() != destination.getWorld()) {
+					if (clearOnEgressWorlds.indexOf(gate.getWorld()) != -1 || clearOnIngressWorlds.indexOf(destination.getWorld()) != -1) {
+						if(!clearMsg.isEmpty()) {
+							player.sendMessage(ChatColor.YELLOW + clearMsg);
+						}
 					}
-				}
-				if (clearOnEgressWorlds.indexOf(destination.getWorld()) != -1) {
-					if(!clearDestMsg.isEmpty()) {
-						player.sendMessage(ChatColor.YELLOW + clearDestMsg);
+					if (clearOnEgressWorlds.indexOf(destination.getWorld()) != -1) {
+						if(!clearDestMsg.isEmpty()) {
+							player.sendMessage(ChatColor.YELLOW + clearDestMsg);
+						}
 					}
 				}
 				gate.open(player, false);
@@ -363,13 +365,15 @@ public class Stargate extends JavaPlugin {
 							if (!teleMsg.isEmpty()) {
 								player.sendMessage(ChatColor.BLUE + teleMsg);
 							}
-							if (clearOnEgressWorlds.indexOf(portal.getWorld()) != -1 || clearOnIngressWorlds.indexOf(destination.getWorld()) != -1) {
-								for (int i = 0; i < 40; i++) {
-									Inventory inventory = player.getInventory();
-									inventory.setItem(i, null);
-								}
-								if(!clearedMsg.isEmpty()) {
-									player.sendMessage(ChatColor.YELLOW + clearedMsg);
+							if (portal.getWorld() != destination.getWorld()) {
+								if (clearOnEgressWorlds.indexOf(portal.getWorld()) != -1 || clearOnIngressWorlds.indexOf(destination.getWorld()) != -1) {
+									for (int i = 0; i < 40; i++) {
+										Inventory inventory = player.getInventory();
+										inventory.setItem(i, null);
+									}
+									if(!clearedMsg.isEmpty()) {
+										player.sendMessage(ChatColor.YELLOW + clearedMsg);
+									}
 								}
 							}
 							destination.teleport(player, portal, event);
