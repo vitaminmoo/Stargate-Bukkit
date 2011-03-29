@@ -364,7 +364,7 @@ public class Stargate extends JavaPlugin {
 								player.sendMessage(ChatColor.BLUE + teleMsg);
 							}
 							if (clearOnEgressWorlds.indexOf(portal.getWorld()) != -1 || clearOnIngressWorlds.indexOf(destination.getWorld()) != -1) {
-								for (int i = 0; i < 39; i++) {
+								for (int i = 0; i < 40; i++) {
 									Inventory inventory = player.getInventory();
 									inventory.setItem(i, null);
 								}
